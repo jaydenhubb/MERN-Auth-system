@@ -4,34 +4,32 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const userRoute = require('./Routes/userRoute')
-const errorHandler = require('./Middleware/errorMiddleware')
+const userRoute = require("./Routes/userRoute");
+const errorHandler = require("./Middleware/errorMiddleware");
 
 const app = express();
-app.use(express.json())
-app.use(express.urlencoded({extended: false}))
-app.use(cookieParser())
-app.use(bodyParser.json())
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(bodyParser.json());
 app.use(
   cors({
     origin: ["http://localhost:3000", "http://authjay-app.vercel.app"],
-    credentials:true
+    credentials: true,
   }),
 );
 
-app.use("/api/users", userRoute )
+app.use("/api/users", userRoute);
 
 app.get("/", (req, res) => {
   res.send("Home Page");
 });
 
 // Error middleware
-app.use(errorHandler)
+app.use(errorHandler);
 
 mongoose
-  .connect(
-  process.env.MONGO_URI
-  )
+  .connect(process.env.MONGO_URI)
   .then(() => {
     app.listen(process.env.PORT, () => {
       console.log(
