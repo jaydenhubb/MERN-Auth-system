@@ -15,7 +15,7 @@ const Header = () => {
       <nav>
         <div className="logo" onClick={goHome}>
           <BiLogIn size={35} />
-          <span>Jay Auth</span>
+          <span>Jay Blog</span>
         </div>
         <ul className="home-links">
           <li className="--flex-center">
