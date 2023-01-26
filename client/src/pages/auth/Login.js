@@ -1,18 +1,65 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "../../components/card/Card";
 import styles from "./auth.module.scss";
 import { BiLogIn } from "react-icons/bi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PasswodInput from "../../components/passwordInput/PasswodInput";
+import { useDispatch, useSelector } from "react-redux";
+import { login, RESET } from "../../redux/features/auth/authSlice";
+import { toast } from "react-toastify";
+import { validateEmail } from "../../redux/features/auth/authService";
+import Loader from "../../components/loading/Loader";
+
+const initialState = {
+  email: "",
+  password: "",
+};
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState(initialState);
+  const {email, password } = formData;
 
-  const handleInputChange = () => {};
-  const loginUser = (e) => {};
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+
+  const {isLoading, isLoggedin, isSuccess, message} = useSelector((state)=> state.auth)
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const loginUser = async(e) => {
+    e.preventDefault()
+    if( !email || !password){
+      return toast.error("All fields are required")
+      
+    }
+    
+    if(!validateEmail){
+      return toast.error("Please enter a valid email")
+     
+    }
+    const userData = {
+       email, password
+    } 
+    console.log("jerry");
+    await dispatch(login(userData))
+  };
+
+  useEffect(()=>{
+    if(isSuccess && isLoggedin){
+      navigate("/profile")
+    
+    }
+    console.log("james");
+    dispatch(RESET())
+  },[isLoggedin, isSuccess, dispatch, navigate])
   return (
     <div className={`container ${styles.auth}`}>
+      {isLoading && <Loader/>}
       <Card>
         <div className={styles.form}>
           <div className="--flex-center">
