@@ -4,8 +4,13 @@ import styles from "./auth.module.scss";
 import { TiUserAddOutline } from "react-icons/ti";
 import { FaTimes } from "react-icons/fa";
 import { BsCheck2All } from "react-icons/bs";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PasswodInput from "../../components/passwordInput/PasswodInput";
+import { toast } from "react-toastify";
+import { validateEmail } from "../../redux/features/auth/authService";
+import {useDispatch, useSelector} from "react-redux"
+import { register, RESET } from "../../redux/features/auth/authSlice";
+import Loader from "../../components/loading/Loader";
 
 const initialState = {
   name: "",
@@ -16,6 +21,11 @@ const initialState = {
 const Register = () => {
   const [formData, setFormData] = useState(initialState);
   const { name, email, password, password2 } = formData;
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const {isLoading, isLoggedin, isSuccess, message} = useSelector((state)=> state.auth)
 
   const [uCase, setUCase] = useState(false);
   const [num, setNum] = useState(false);
@@ -60,9 +70,50 @@ const Register = () => {
     }
   }, [password]);
 
-  const loginUser = (e) => {};
+  const registerUser = async (e) => {
+    e.preventDefault()
+    if(!name || !email || !password){
+      return toast.error("All fields are required")
+      
+    }
+    if(password.length < 6){
+      return toast.error("Password must be greater than 5 characters")
+      
+    }
+    if(!validateEmail){
+      return toast.error("Please enter a valid email")
+     
+    }
+    if(password !== password2){
+      return toast.error("Passwords do not match")
+    
+    }
+    const userData = {
+      name, email, password
+    } 
+    console.log("jerry");
+    await dispatch(register(userData))
+    
+  };
+
+
+  useEffect(()=>{
+    if(isSuccess && isLoggedin){
+      navigate("/profile")
+    
+    }
+    console.log("james");
+    dispatch(RESET())
+  },[isLoggedin, isSuccess, dispatch, navigate])
+
+
+
+  
+
+
   return (
     <div className={`container ${styles.auth}`}>
+      {isLoading && <Loader/>}
       <Card>
         <div className={styles.form}>
           <div className="--flex-center">
@@ -70,7 +121,7 @@ const Register = () => {
           </div>
           <h2>Register</h2>
 
-          <form onSubmit={loginUser}>
+          <form onSubmit={registerUser}>
             <input
               type="text"
               placeholder="Name"
@@ -98,6 +149,11 @@ const Register = () => {
               name="password2"
               value={password2}
               onChange={handleInputChange}
+              onPaste={(e)=>{
+                e.preventDefault()
+                toast.error("Cannot paste into input field")
+                return false
+              }}
             />
             {/* password strength */}
             <Card cardClass={styles.group}>
