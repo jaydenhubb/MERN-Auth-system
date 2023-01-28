@@ -20,9 +20,10 @@ const PasswodInput = ({ placeholder, value, onChange, onPaste, name }) => {
       />
       <div className="icon" onClick={togglePassword}>
         {showPassword ? (
-          <AiOutlineEye size={20} />
-        ) : (
+          
           <AiOutlineEyeInvisible size={20} />
+        ) : (
+          <AiOutlineEye size={20} />
         )}
       </div>
     </div>
