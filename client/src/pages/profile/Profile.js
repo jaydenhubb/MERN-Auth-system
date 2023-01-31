@@ -9,6 +9,16 @@ import { getUser, selectUser, updateProfile } from "../../redux/features/auth/au
 import Loader from "../../components/loading/Loader";
 import { toast } from "react-toastify";
 
+
+const shortenName = (name, n)=>{
+  if(name.length < n){
+    const shortenedname = name.substring(0, n).concat("...")
+    return shortenedname
+  }
+  return name
+}
+
+
 const Profile = () => {
   UseRedirectSession("/login");
 
@@ -95,12 +105,12 @@ const Profile = () => {
         isVerified:user.isVerified,
       })
     }
-  },[user])
+  },[user, setProfile,])
   return (
     <>
       <section className="container">
-      {isLoading && <Loader />}
         <PageMenu />
+      {isLoading && <Loader />}
         <h2>Profile</h2>
         <div className="--flex-start profile">
           <Card cardClass={"card"}>
@@ -181,7 +191,7 @@ export const UserName = ()=>{
   const user = useSelector(selectUser)
   const userName = user?.name || "..."
 
-  return <p className="--color-white">Hi, {userName} |</p>
+  return <p className="--color-white">Hi, {shortenName(userName, 8)} |</p>
 }
 
 export default Profile;
