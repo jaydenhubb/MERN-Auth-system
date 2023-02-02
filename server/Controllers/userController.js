@@ -147,7 +147,7 @@ const loginUser = asynHandler(async (req, res) => {
     // Delete verification token if it exists
     let usertoken = await Token.findOne({ userId: user._id });
     if (usertoken) {
-      await token.deleteOne();
+      await usertoken.deleteOne();
     }
     // save token to db
 
@@ -449,7 +449,7 @@ const sendMail = asynHandler(async (req, res) => {
   //
   try {
     sendEmail(subject, send_to, sent_from, reply_to, template, name, link);
-    res.status(200).json({ Message: "Email sent" });
+    res.status(200).json({ message: "Email sent" });
   } catch (err) {
     res.status(500);
     throw new Error("Email not sent, please try again");
@@ -492,7 +492,7 @@ const forgotPassword = asynHandler(async (req, res) => {
   const subject = "Reset Your Password - Auth-jay";
   const send_to = user.email;
   const sent_from = process.env.EMAIL_USER;
-  const reply_to = "jaydenblakelex@gmail.com";
+  const reply_to = "noreply@gmail.com";
   const template = "forgotPassword";
   const name = user.name;
   const link = resetUrl;
