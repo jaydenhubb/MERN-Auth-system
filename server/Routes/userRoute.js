@@ -18,6 +18,7 @@ const {
   changePassword,
   sendLoginCode,
   loginWithCode,
+  loginWithGoogle,
 } = require("../Controllers/userController");
 const { protect, adminOnly, authorOnly } = require('../Middleware/authMiddleware')
 
@@ -29,7 +30,7 @@ router.get('/getUser', protect, getUser)
 
 
 router.patch('/updateUser',protect, updateUser)
-router.delete('/deleteUser/:id',protect, adminOnly, deleteUser)
+router.delete('/:id',protect, adminOnly, deleteUser)
 router.get('/loginStatus', loginStatus)
 router.post("/upgradeUser", protect, adminOnly, upgradeUser);
 router.post("/sendMail", protect, sendMail);
@@ -41,7 +42,7 @@ router.patch("/resetPassword/:resetToken", resetPassword);
 router.patch("/changePassword", protect, changePassword);
 
 
-
+router.post("/google/callback", loginWithGoogle)
 router.post("/sendLoginCode/:email", sendLoginCode);
 router.post("/loginWithCode/:email", loginWithCode);
 

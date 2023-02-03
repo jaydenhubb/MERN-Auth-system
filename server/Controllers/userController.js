@@ -9,6 +9,8 @@ const Token = require("../Model/TokenModel");
 const crypto = require("crypto");
 const Cryptr = require("cryptr");
 const cryptr = new Cryptr(process.env.CRYPTR_KEY);
+const {OAuth2Client} = require("google-auth-library")
+const client = new OAuth2Client(process.env.CLIENT_ID)
 
 // Create User
 const registerUser = asynHandler(async (req, res) => {
@@ -449,7 +451,7 @@ const sendMail = asynHandler(async (req, res) => {
   //
   try {
     sendEmail(subject, send_to, sent_from, reply_to, template, name, link);
-    res.status(200).json({ message: "Email sent" });
+    res.status(200).json({ message: "Confirmation Email sent" });
   } catch (err) {
     res.status(500);
     throw new Error("Email not sent, please try again");
@@ -556,7 +558,84 @@ const changePassword = asynHandler(async (req, res) => {
   }
 });
 
+// Login with google
+
+const loginWithGoogle = asynHandler(async (req, res)=>{
+  const {userToken} = req.body
+  // console.log(userToken)
+  // res.send("Google Login")
+  const ticket = await client.verifyIdToken({
+    idToken:userToken, 
+    audience: process.env.CLIENT_ID
+  })
+  const payload = ticket.getPayload()
+  const {name, email, picture, sub } = payload
+  const password = Date.now()+ sub
+  const ua = parser(req.headers["user-agent"]);
+  const userAgent = [ua.ua];
+  // console.log(payload);
+  const user = await User.findOne({email})
+  if (!user){
+    const newUser = await User.create({ name, email, password, userAgent, photo:picture, isVerified:true, userAgent });
+  
+    // Generate Token
+    if(newUser){
+      const token = createToken(newUser._id);
+    
+      //send HTTP-only cookie
+      res.cookie("token", token, {
+        path: "/",
+        httpOnly: true,
+        expires: new Date(Date.now() + 1000 * 86400), //one day
+        sameSite: "none",
+        secure: true,
+      })
+
+      const { _id, name, email, phone, bio, photo, role, isVerified } = newUser;
+      console.log(_id, name, email, phone, bio, photo, role, isVerified);
+    res.status(201).json({
+      _id,
+      name,
+      email,
+      phone,
+      bio,
+      photo,
+      role,
+      isVerified,
+      token,
+    });
+    }
+  }
+  if(user){
+    const token = createToken(user._id);
+    
+      //send HTTP-only cookie
+      res.cookie("token", token, {
+        path: "/",
+        httpOnly: true,
+        expires: new Date(Date.now() + 1000 * 86400), //one day
+        sameSite: "none",
+        secure: true,
+      })
+      const { _id, name, email, phone, bio, photo, role, isVerified } = user;
+      res.status(201).json({
+        _id,
+        name,
+        email,
+        phone,
+        bio,
+        photo,
+        role,
+        isVerified,
+        token,
+      })
+  }
+});
+
+
+
 module.exports = {
+  
   registerUser,
   loginUser,
   logOutUser,
@@ -574,4 +653,5 @@ module.exports = {
   changePassword,
   sendLoginCode,
   loginWithCode,
+  loginWithGoogle
 };
