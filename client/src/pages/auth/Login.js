@@ -66,7 +66,6 @@ const Login = () => {
   }, [isLoggedin, isSuccess, dispatch, navigate, isError, twoFactor, email]);
 
   const googleLogin = async(credentialResponse)=>{
-    // console.log(credentialResponse);
     await dispatch(loginWithGoogle({userToken:credentialResponse.credential}))
     console.log(credentialResponse.credential);
   }
@@ -82,7 +81,6 @@ const Login = () => {
           </div>
           <h2>Login</h2>
           <div className="--flex-center">
-            {/* <button className="--btn --btn-google">Sign in with Google</button> */}
             <GoogleLogin
               onSuccess={googleLogin}
               onError={() => {
@@ -109,14 +107,7 @@ const Login = () => {
               value={password}
               onChange={handleInputChange}
             />
-            {/* <input
-              type="password"
-              placeholder="Password"
-              required
-              name="password"
-              value={password}
-              onChange={handleInputChange}
-            /> */}
+
             <button type="submit" className="--btn --btn-primary --btn-block">
               Login
             </button>

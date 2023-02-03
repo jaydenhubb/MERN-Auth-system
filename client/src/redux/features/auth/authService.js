@@ -60,10 +60,10 @@ const changePassword = async (userData) =>{
     const response = await axios.patch(API_URL + "changePassword" , userData)
     return response.data.message
 }
-// Change Password
+// forgot Password
 const forgotPassword = async (userData) =>{
     const response = await axios.post(API_URL + "forgotPassword" , userData)
-    return response.data.message
+    return response.data.Message
 }
 // Reset Password
 const resetPassword = async (userData, resetToken) =>{

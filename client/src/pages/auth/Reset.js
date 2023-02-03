@@ -29,7 +29,7 @@ const Reset = () => {
   const [num, setNum] = useState(false);
   const [sChar, setSChar] = useState(false);
   const [pLength, setPLength] = useState(false);
-  const { isLoading, isLoggedin, user, isSuccess, isError, message } =
+  const { isLoading, isLoggedin, user, isSuccess, message } =
     useSelector((state) => state.auth);
   const {resetToken} = useParams()
     useEffect(() => {
@@ -81,7 +81,7 @@ const Reset = () => {
     navigate("/login");
   };
   useEffect(()=>{
-    if(isSuccess && message.inclusdes("Reset Successful")){
+    if(isSuccess && message.includes("Reset Successful")){
       navigate("/login")
     
     }

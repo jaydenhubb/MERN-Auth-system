@@ -3,7 +3,6 @@ import Card from "../../components/card/Card";
 import styles from "./auth.module.scss";
 import { AiOutlineMail } from "react-icons/ai";
 import { Link } from "react-router-dom";
-import PasswodInput from "../../components/passwordInput/PasswodInput";
 import { toast } from "react-toastify";
 import { validateEmail } from "../../redux/features/auth/authService";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,7 +18,7 @@ const Forgot = () => {
 
   
   const forgot = async(e) => {
-    e.preventdefault()
+    e.preventDefault()
     if(!email){
       return toast.error("Please enter you email")
     }
@@ -30,7 +29,7 @@ const Forgot = () => {
       email
     }
     await dispatch(forgotPassword(userData))
-    await dispatch(RESET(userData))
+    await dispatch(RESET())
   };
   return (
     <div className={`container ${styles.auth}`}>

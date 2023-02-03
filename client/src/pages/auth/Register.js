@@ -92,7 +92,6 @@ const Register = () => {
     const userData = {
       name, email, password
     } 
-    // console.log("jerry");
     await dispatch(register(userData))
     await dispatch(sendVmail());
     
@@ -157,7 +156,6 @@ const Register = () => {
                 return false
               }}
             />
-            {/* password strength */}
             <Card cardClass={styles.group}>
               <ul className="form-list">
                 <li>
