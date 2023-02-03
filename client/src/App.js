@@ -13,12 +13,35 @@ import UserList from "./pages/userList/UserList";
 import axios from "axios"
 import { ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { getLoginStatus, getUser, selectIsLoggedIn, selectUser } from "./redux/features/auth/authSlice";
+import { useSelector } from "react-redux";
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
+
 axios.defaults.withCredentials = true
+
+
+
+
 function App() {
+const dispatch = useDispatch()
+const isLoggedIn = useSelector(selectIsLoggedIn)
+const user = useSelector(selectUser)
+  useEffect(()=>{
+    dispatch(getLoginStatus())
+    if(isLoggedIn && user===null){
+      dispatch(getUser())
+    }
+  },[dispatch,isLoggedIn ])
+
+
   return (
     <>
       <BrowserRouter>
       <ToastContainer />
+      <GoogleOAuthProvider clientId={process.env.REACT_APP_CLIENT_ID}>...
         <Routes>
           <Route
             path="/"
@@ -67,6 +90,7 @@ function App() {
             }
           />
         </Routes>
+        </GoogleOAuthProvider>
       </BrowserRouter>
     </>
   );

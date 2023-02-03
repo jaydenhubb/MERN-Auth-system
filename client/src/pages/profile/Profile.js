@@ -8,10 +8,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { getUser, selectUser, updateProfile } from "../../redux/features/auth/authSlice";
 import Loader from "../../components/loading/Loader";
 import { toast } from "react-toastify";
+import Notification from "../../components/notification/Notification";
 
 
-const shortenName = (name, n)=>{
-  if(name.length < n){
+export const shortenName = (name, n)=>{
+  if(name.length > n){
     const shortenedname = name.substring(0, n).concat("...")
     return shortenedname
   }
@@ -23,7 +24,7 @@ const Profile = () => {
   UseRedirectSession("/login");
 
   const dispatch = useDispatch();
-  const { isLoading, isLoggedin, isSuccess, message, user } = useSelector(
+  const { isLoading,  user } = useSelector(
     (state) => state.auth
   );
   const cloudName = process.env.REACT_APP_CLOUD_NAME;
@@ -108,6 +109,7 @@ const Profile = () => {
   },[user, setProfile,])
   return (
     <>
+      {!profile.isVerified && <Notification/>}
       <section className="container">
         <PageMenu />
       {isLoading && <Loader />}

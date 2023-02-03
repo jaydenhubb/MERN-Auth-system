@@ -1,7 +1,6 @@
 import "./ChangePassword.scss";
 
 import Card from "../../components/card/Card";
-// import Card from "../../components/card/Card";
 import styles from "../auth/auth.module.scss";
 import { FaTimes } from "react-icons/fa";
 import { BsCheck2All } from "react-icons/bs";
@@ -13,8 +12,13 @@ import UseRedirectSession from "../../customHook/UseRedirectSession";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { changePassword, logout, RESET } from "../../redux/features/auth/authSlice";
-
+import {
+  changePassword,
+  logout,
+  RESET,
+} from "../../redux/features/auth/authSlice";
+import { Spinner } from "../../components/loading/Loader";
+import { sendAutoMail } from "../../redux/features/email/emailSlice";
 
 const initialState = {
   oldPassword: "",
@@ -34,9 +38,8 @@ const ChangePassword = () => {
   const [num, setNum] = useState(false);
   const [sChar, setSChar] = useState(false);
   const [pLength, setPLength] = useState(false);
-  const { isLoading, isLoggedin, user, isSuccess } = useSelector(
-    (state) => state.auth
-  );
+  const { isLoading, isLoggedin, user, isSuccess, isError, message } =
+    useSelector((state) => state.auth);
 
   useEffect(() => {
     if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/)) {
@@ -72,30 +75,34 @@ const ChangePassword = () => {
     return timesIcon;
   };
 
-  const updatePassword = async(e) => {
+  const updatePassword = async (e) => {
     e.preventDefault();
     if (!oldPassword || !password2 || !password) {
       return toast.error("All fields are required");
     }
-    if(password.length < 6){
-      return toast.error("Password must be greater than 5 characters")
-      
+    if (password.length < 6) {
+      return toast.error("Password must be greater than 5 characters");
     }
-    
+
     if (password !== password2) {
       return toast.error("Passwords do not match");
     }
     const userData = {
       oldPassword,
-      password
+      password,
+    };
+    const emailData = {
+      subject: "Password Changed - JAY:AUTH",
+      send_to: user.email,
+      reply_to: "noreply@gmail.com",
+      template: "changePassword",
+      url:"/forgot"
     }
-    await dispatch(changePassword(userData))
-    if(!isSuccess){
-      await dispatch(logout())
-      await dispatch(RESET())
-      navigate("/login")
-
-    }
+    await dispatch(changePassword(userData));
+    await dispatch(sendAutoMail(emailData));
+    await dispatch(logout());
+    await dispatch(RESET(userData));
+    navigate("/login");
   };
   return (
     <>
@@ -134,33 +141,36 @@ const ChangePassword = () => {
                   />
                 </p>
                 <Card cardClass={styles.group}>
-              <ul className="form-list">
-                <li>
-                  <span className={styles.indicator}>
-                    {switchIcon(uCase)} &nbsp; Lowercase & Uppercase
-                  </span>
-                </li>
-                <li>
-                  <span className={styles.indicator}>
-                    {switchIcon(num)} &nbsp;Number (0-9)
-                  </span>
-                </li>
-                <li>
-                  <span className={styles.indicator}>
-                    {switchIcon(sChar)} &nbsp;Special Character
-                  </span>
-                </li>
-                <li>
-                  <span className={styles.indicator}>
-                    {switchIcon(pLength)} &nbsp;At least 6 Characters
-                  </span>
-                </li>
-              </ul>
-            </Card>
-
-                <button className="--btn --btn-danger --btn-block">
-                  Change Password
-                </button>
+                  <ul className="form-list">
+                    <li>
+                      <span className={styles.indicator}>
+                        {switchIcon(uCase)} &nbsp; Lowercase & Uppercase
+                      </span>
+                    </li>
+                    <li>
+                      <span className={styles.indicator}>
+                        {switchIcon(num)} &nbsp;Number (0-9)
+                      </span>
+                    </li>
+                    <li>
+                      <span className={styles.indicator}>
+                        {switchIcon(sChar)} &nbsp;Special Character
+                      </span>
+                    </li>
+                    <li>
+                      <span className={styles.indicator}>
+                        {switchIcon(pLength)} &nbsp;At least 6 Characters
+                      </span>
+                    </li>
+                  </ul>
+                </Card>
+                {isLoading ? (
+                  <Spinner />
+                ) : (
+                  <button type="submit" className="--btn --btn-danger --btn-block">
+                    Change Password
+                  </button>
+                )}
               </form>
             </>
           </Card>

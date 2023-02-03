@@ -11,6 +11,7 @@ import { validateEmail } from "../../redux/features/auth/authService";
 import {useDispatch, useSelector} from "react-redux"
 import { register, RESET } from "../../redux/features/auth/authSlice";
 import Loader from "../../components/loading/Loader";
+import { sendVmail } from "../../redux/features/auth/authSlice";
 
 const initialState = {
   name: "",
@@ -30,7 +31,7 @@ const Register = () => {
   const [uCase, setUCase] = useState(false);
   const [num, setNum] = useState(false);
   const [sChar, setSChar] = useState(false);
-  const [pLength, setPLength] = useState(true);
+  const [pLength, setPLength] = useState(false);
 
   const timesIcon = <FaTimes color="red" size={15} />;
   const checkIcon = <BsCheck2All color="green" size={15} />;
@@ -44,7 +45,7 @@ const Register = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name]: value }); 
   };
 
   useEffect(() => {
@@ -91,15 +92,16 @@ const Register = () => {
     const userData = {
       name, email, password
     } 
-    console.log("jerry");
+    // console.log("jerry");
     await dispatch(register(userData))
+    await dispatch(sendVmail());
     
   };
 
 
   useEffect(()=>{
     if(isSuccess && isLoggedin){
-      navigate("/profile")
+      navigate("/")
     
     }
     console.log("james");

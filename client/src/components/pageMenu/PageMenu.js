@@ -1,11 +1,11 @@
-import {NavLink} from 'react-router-dom'
+import { NavLink } from "react-router-dom";
+import { AdminAuthorLink } from "../protect/HideLinks";
 
 const PageMenu = () => {
   return (
     <div>
-      <nav className='--btn-google --p --mb --mt'>
+      <nav className="--btn-google --p --mb --mt">
         <ul className="home-links">
-          
           <li>
             <NavLink to="/profile" className="">
               Profile
@@ -16,16 +16,17 @@ const PageMenu = () => {
               Change Password
             </NavLink>
           </li>
-          <li>
-            <NavLink to="/users" className="">
-              Users
-            </NavLink>
-          </li>
-         
+          <AdminAuthorLink>
+            <li>
+              <NavLink to="/users" className="">
+                Users
+              </NavLink>
+            </li>
+          </AdminAuthorLink>
         </ul>
       </nav>
     </div>
   );
-}
+};
 
-export default PageMenu
+export default PageMenu;
